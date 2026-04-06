@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run tests
+        run: go test ./...
+
+      - name: Build release artifacts
+        run: |
+          mkdir -p dist
+          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o dist/git-sage-linux-amd64 main.go
+          GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o dist/git-sage-darwin-amd64 main.go
+          GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o dist/git-sage-darwin-arm64 main.go
+          GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o dist/git-sage-windows-amd64.exe main.go
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum * > checksums.txt
+
+      - name: Upload artifacts to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/git-sage-linux-amd64
+            dist/git-sage-darwin-amd64
+            dist/git-sage-darwin-arm64
+            dist/git-sage-windows-amd64.exe
+            dist/checksums.txt
+          generate_release_notes: true
