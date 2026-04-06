@@ -22,7 +22,7 @@
 ### From Source
 
 ```bash
-git clone https://github.com/Amul-Thantharate/git-sage.git
+git clone https://github.com/AmulThantharate/git-sage.git
 cd git-sage
 make install
 ```
@@ -130,4 +130,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Author
 
-**Amul Thantharate** ([@blackroute](https://github.com/blackroute))
+**Amul Thantharate** ([@AmulThantharate](https://github.com/AmulThantharate))
