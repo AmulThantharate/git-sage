@@ -1,0 +1,10 @@
+# Binaries
+git-sage
+dist/
+
+# IDEs
+.vscode/
+.idea/
+
+# Go
+go.work
