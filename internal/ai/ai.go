@@ -12,26 +12,26 @@ import (
 )
 
 const (
-	// defaultModel is the default OpenRouter model used to generate commit messages.
-	defaultModel   = "qwen/qwen3.6-plus:free"
-	fallbackModel  = "minimax/minimax-m2.5:free"
-	defaultBaseURL = "https://openrouter.ai/api/v1"
+	// defaultModel is the default Gemini model used to generate commit messages.
+	defaultModel   = "gemini-2.5-flash"
+	fallbackModel  = "gemini-2.5-flash-lite"
+	defaultBaseURL = "https://generativelanguage.googleapis.com/v1beta/openai"
 )
 
-// openRouterRequest represents the request payload for OpenRouter's chat completions API.
-type openRouterRequest struct {
+// chatCompletionsRequest represents the request payload for chat completions API.
+type chatCompletionsRequest struct {
 	Model       string              `json:"model"`
-	Messages    []openRouterMessage `json:"messages"`
+	Messages    []chatMessage       `json:"messages"`
 	Temperature float64             `json:"temperature,omitempty"`
 }
 
-type openRouterMessage struct {
+type chatMessage struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
-// openRouterResponse represents the minimal subset of the OpenRouter response we care about.
-type openRouterResponse struct {
+// chatCompletionsResponse represents the minimal subset of the response we care about.
+type chatCompletionsResponse struct {
 	Choices []struct {
 		Message struct {
 			Content string `json:"content"`
@@ -55,10 +55,10 @@ func uniqueModels(models []string) []string {
 	return out
 }
 
-func callOpenRouter(apiKey, baseURL, model, prompt string) (string, error) {
-	reqBody := openRouterRequest{
+func callGemini(apiKey, baseURL, model, prompt string) (string, error) {
+	reqBody := chatCompletionsRequest{
 		Model: model,
-		Messages: []openRouterMessage{
+		Messages: []chatMessage{
 			{
 				Role:    "system",
 				Content: "You are a helpful assistant that writes semantic git commit messages.",
@@ -97,7 +97,7 @@ func callOpenRouter(apiKey, baseURL, model, prompt string) (string, error) {
 		return "", fmt.Errorf("model %q failed with status %d: %s", model, resp.StatusCode, string(body))
 	}
 
-	var result openRouterResponse
+	var result chatCompletionsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return "", err
 	}
@@ -112,17 +112,17 @@ func callOpenRouter(apiKey, baseURL, model, prompt string) (string, error) {
 // GenerateSubject generates the commit subject.
 // If userDescription is non-empty, it is used as additional context alongside the diff.
 func GenerateSubject(diff string, commitType string, emoji string, userDescription string) (string, error) {
-	apiKey := os.Getenv("OPENROUTER_API_KEY")
+	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		return "", fmt.Errorf("OPENROUTER_API_KEY env var is not set")
+		return "", fmt.Errorf("GEMINI_API_KEY env var is not set")
 	}
 
-	baseURL := os.Getenv("OPENROUTER_API_BASE_URL")
+	baseURL := os.Getenv("GEMINI_API_BASE_URL")
 	if baseURL == "" {
 		baseURL = defaultBaseURL
 	}
 
-	model := os.Getenv("OPENROUTER_MODEL")
+	model := os.Getenv("GEMINI_MODEL")
 	if model == "" {
 		model = defaultModel
 	}
@@ -153,7 +153,7 @@ Diff:
 	var subject string
 	var lastErr error
 	for _, modelName := range modelsToTry {
-		subject, lastErr = callOpenRouter(apiKey, baseURL, modelName, prompt)
+		subject, lastErr = callGemini(apiKey, baseURL, modelName, prompt)
 		if lastErr == nil {
 			break
 		}

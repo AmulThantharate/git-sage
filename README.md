@@ -1,11 +1,11 @@
 # git-sage 🧙‍♂️
 
-**git-sage** is a production-ready CLI tool written in Go that leverages AI (OpenRouter) to generate high-quality, emoji-prefixed Git commit messages. It streamlines your workflow by automatically crafting concise subjects and detailed bodies, ensuring your commit history follows [Conventional Commits](https://www.conventionalcommits.org/) best practices.
+**git-sage** is a production-ready CLI tool written in Go that leverages AI (Gemini) to generate high-quality, emoji-prefixed Git commit messages. It streamlines your workflow by automatically crafting concise subjects and detailed bodies, ensuring your commit history follows [Conventional Commits](https://www.conventionalcommits.org/) best practices.
 
 ## ✨ Features
 
 - 🧠 **AI-Powered**: Generates concise, present-tense commit subjects and detailed bodies explaining the _why_.
-- 🚀 **Powered by OpenRouter**: Uses the OpenAI-compatible API with configurable models.
+- 🚀 **Powered by Gemini**: Uses the OpenAI-compatible Gemini endpoint with configurable models.
 - 🎨 **Emoji Support**: Automatically detects commit type and suggests appropriate emojis.
 - 🤖 **Context Aware**: Analyzes your staged diff to understand the changes.
 - 🕹️ **Interactive TUI**: Keyboard-friendly picker for commit types and scopes (powered by [Bubble Tea](https://github.com/charmbracelet/bubbletea)).
@@ -17,7 +17,7 @@
 ### Prerequisites
 
 - Go 1.21+
-- An OpenRouter API Key (Get one at [openrouter.ai](https://openrouter.ai))
+- A Gemini API Key (Get one from [Google AI Studio](https://aistudio.google.com/))
 
 ### From Source
 
@@ -31,10 +31,10 @@ This will build the binary and move it to `/usr/local/bin/git-sage`. Ensure `/us
 
 ## 🛠 Setup
 
-1. **Set your OpenRouter API Key** (Required):
+1. **Set your Gemini API Key** (Required):
 
    ```bash
-   export OPENROUTER_API_KEY="your_api_key_here"
+   export GEMINI_API_KEY="your_api_key_here"
    ```
 
    Add this to your `~/.bashrc`, `~/.zshrc`, or `.env`.
@@ -110,17 +110,17 @@ remote_config: "https://example.com/company-git-sage.yaml"
 
 | Variable                  | Description                            | Default                        |
 | ------------------------- | -------------------------------------- | ------------------------------ |
-| `OPENROUTER_API_KEY`      | **(Required)** Your OpenRouter API Key | None                           |
-| `OPENROUTER_API_BASE_URL` | Custom endpoint for OpenRouter API     | `https://openrouter.ai/api/v1` |
-| `OPENROUTER_MODEL`        | Primary model to use via OpenRouter    | `qwen/qwen3.6-plus:free`       |
+| `GEMINI_API_KEY`      | **(Required)** Your Gemini API Key | None                           |
+| `GEMINI_API_BASE_URL` | Custom endpoint for Gemini API     | `https://generativelanguage.googleapis.com/v1beta/openai` |
+| `GEMINI_MODEL`        | Primary model to use via Gemini    | `gemini-2.5-flash`       |
 
-If the primary model fails, git-sage automatically retries with fallback model `minimax/minimax-m2.5:free`.
+If the primary model fails, git-sage automatically retries with fallback model `gemini-2.5-flash-lite`.
 
 ## 🏗 Internal Architecture
 
 - **`internal/git`**: Git command wrappers and diff extraction.
 - **`internal/detect`**: Heuristic engine for guessing commit types from file extensions and diffs.
-- **`internal/ai`**: OpenRouter API client and prompt engineering.
+- **`internal/ai`**: Gemini API client and prompt engineering.
 - **`internal/config`**: Multi-source configuration loader (YAML).
 - **`internal/ui`**: TUI implementation using Bubble Tea and Lip Gloss.
 
