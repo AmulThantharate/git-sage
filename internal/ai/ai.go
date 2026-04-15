@@ -13,8 +13,8 @@ import (
 
 const (
 	// defaultModel is the default OpenRouter model used to generate commit messages.
-	defaultModel   = "qwen/qwen3.6-plus:free"
-	fallbackModel  = "minimax/minimax-m2.5:free"
+	defaultModel   = "minimax/minimax-m2.5:free"
+	fallbackModel  = "qwen/qwen3.6-plus:free"
 	defaultBaseURL = "https://openrouter.ai/api/v1"
 )
 
