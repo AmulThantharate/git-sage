@@ -23,11 +23,7 @@ const (
 
 // AnalyzeDiff guesses the commit type based on file paths and diff content.
 func AnalyzeDiff(files []string, diff string) (CommitType, float64) {
-	// 1. Check for specific keywords in diff (strong signal)
-	// Simple heuristic: if we see "func Test..." additions, it's likely a test
-	// If we see "FIXME" removals, maybe a fix? (Hard to distinguish from adding FIXME)
-
-	// 2. Check file extensions/names (medium signal)
+	
 	counts := make(map[CommitType]int)
 
 	for _, f := range files {

@@ -13,8 +13,8 @@ import (
 
 const (
 	// defaultModel is the default OpenRouter model used to generate commit messages.
-	defaultModel   = "minimax/minimax-m2.5:free"
-	fallbackModel  = "qwen/qwen3.6-plus:free"
+	defaultModel   = "openai/gpt-oss-120b:free"
+	fallbackModel  = "qwen/qwen3-coder:free"
 	defaultBaseURL = "https://openrouter.ai/api/v1"
 )
 
@@ -156,6 +156,11 @@ Diff:
 		subject, lastErr = callOpenRouter(apiKey, baseURL, modelName, prompt)
 		if lastErr == nil {
 			break
+		}
+		
+		// Short-circuit on authentication errors
+		if strings.Contains(lastErr.Error(), "status 401") || strings.Contains(lastErr.Error(), "status 403") {
+			return "", fmt.Errorf("authentication failed for OpenRouter API. Please ensure your OPENROUTER_API_KEY is valid. Error: %w", lastErr)
 		}
 	}
 	if lastErr != nil {
