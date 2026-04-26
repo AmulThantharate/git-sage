@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	// defaultModel is the default Gemini model used to generate commit messages.
-	defaultModel   = "gemini-2.5-flash"
-	fallbackModel  = "gemini-2.5-flash-lite"
-	defaultBaseURL = "https://generativelanguage.googleapis.com/v1beta/openai"
+	// defaultModel is the default Groq model used to generate commit messages.
+	defaultModel   = "llama-3.3-70b-versatile"
+	fallbackModel  = "llama-3.1-8b-instant"
+	defaultBaseURL = "https://api.groq.com/openai/v1"
 )
 
 // chatCompletionsRequest represents the request payload for chat completions API.
@@ -55,7 +55,7 @@ func uniqueModels(models []string) []string {
 	return out
 }
 
-func callGemini(apiKey, baseURL, model, prompt string) (string, error) {
+func callAI(apiKey, baseURL, model, prompt string) (string, error) {
 	reqBody := chatCompletionsRequest{
 		Model: model,
 		Messages: []chatMessage{
@@ -112,17 +112,31 @@ func callGemini(apiKey, baseURL, model, prompt string) (string, error) {
 // GenerateSubject generates the commit subject.
 // If userDescription is non-empty, it is used as additional context alongside the diff.
 func GenerateSubject(diff string, commitType string, emoji string, userDescription string) (string, error) {
-	apiKey := os.Getenv("GEMINI_API_KEY")
+	// Prioritize GROQ_API_KEY, then GIT_SAGE_API_KEY, then GEMINI_API_KEY
+	apiKey := os.Getenv("GROQ_API_KEY")
 	if apiKey == "" {
-		return "", fmt.Errorf("GEMINI_API_KEY env var is not set")
+		apiKey = os.Getenv("GIT_SAGE_API_KEY")
+	}
+	if apiKey == "" {
+		apiKey = os.Getenv("GEMINI_API_KEY")
 	}
 
-	baseURL := os.Getenv("GEMINI_API_BASE_URL")
+	if apiKey == "" {
+		return "", fmt.Errorf("no API key found. Please set GROQ_API_KEY, GIT_SAGE_API_KEY, or GEMINI_API_KEY")
+	}
+
+	baseURL := os.Getenv("GIT_SAGE_API_BASE_URL")
+	if baseURL == "" {
+		baseURL = os.Getenv("GEMINI_API_BASE_URL")
+	}
 	if baseURL == "" {
 		baseURL = defaultBaseURL
 	}
 
-	model := os.Getenv("GEMINI_MODEL")
+	model := os.Getenv("GIT_SAGE_MODEL")
+	if model == "" {
+		model = os.Getenv("GEMINI_MODEL")
+	}
 	if model == "" {
 		model = defaultModel
 	}
@@ -153,7 +167,7 @@ Diff:
 	var subject string
 	var lastErr error
 	for _, modelName := range modelsToTry {
-		subject, lastErr = callGemini(apiKey, baseURL, modelName, prompt)
+		subject, lastErr = callAI(apiKey, baseURL, modelName, prompt)
 		if lastErr == nil {
 			break
 		}

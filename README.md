@@ -17,7 +17,8 @@
 ### Prerequisites
 
 - Go 1.21+
-- A Gemini API Key (Get one from [Google AI Studio](https://aistudio.google.com/))
+- A Groq API Key (Get one from [Groq Console](https://console.groq.com/))
+- Alternatively, a Gemini API Key (Get one from [Google AI Studio](https://aistudio.google.com/))
 
 ### From Source
 
@@ -31,7 +32,13 @@ This will build the binary and move it to `/usr/local/bin/git-sage`. Ensure `/us
 
 ## 🛠 Setup
 
-1. **Set your Gemini API Key** (Required):
+1. **Set your API Key** (Required):
+
+   ```bash
+   export GROQ_API_KEY="your_api_key_here"
+   ```
+
+   Or if using Gemini:
 
    ```bash
    export GEMINI_API_KEY="your_api_key_here"
@@ -110,11 +117,18 @@ remote_config: "https://example.com/company-git-sage.yaml"
 
 | Variable                  | Description                            | Default                        |
 | ------------------------- | -------------------------------------- | ------------------------------ |
-| `GEMINI_API_KEY`      | **(Required)** Your Gemini API Key | None                           |
-| `GEMINI_API_BASE_URL` | Custom endpoint for Gemini API     | `https://generativelanguage.googleapis.com/v1beta/openai` |
-| `GEMINI_MODEL`        | Primary model to use via Gemini    | `gemini-2.5-flash`       |
+| `GROQ_API_KEY`        | **(Required)** Your Groq API Key       | None                           |
+| `GIT_SAGE_API_KEY`    | Generic API Key (overrides GEMINI)     | None                           |
+| `GEMINI_API_KEY`      | Legacy/Gemini API Key                  | None                           |
+| `GIT_SAGE_API_BASE_URL` | Custom endpoint for the AI API        | `https://api.groq.com/openai/v1` |
+| `GIT_SAGE_MODEL`      | Primary model to use                   | `llama-3.3-70b-versatile`      |
 
-If the primary model fails, git-sage automatically retries with fallback model `gemini-2.5-flash-lite`.
+If the primary model fails, git-sage automatically retries with fallback model `llama-3.1-8b-instant`.
+
+| Variable                  | Legacy/Alternative Variable            |
+| ------------------------- | -------------------------------------- |
+| `GIT_SAGE_API_BASE_URL`   | `GEMINI_API_BASE_URL`                  |
+| `GIT_SAGE_MODEL`          | `GEMINI_MODEL`                         |
 
 ## 🏗 Internal Architecture
 
