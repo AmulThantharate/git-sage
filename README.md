@@ -120,15 +120,17 @@ remote_config: "https://example.com/company-git-sage.yaml"
 | `GROQ_API_KEY`        | **(Required)** Your Groq API Key       | None                           |
 | `GIT_SAGE_API_KEY`    | Generic API Key (overrides GEMINI)     | None                           |
 | `GEMINI_API_KEY`      | Legacy/Gemini API Key                  | None                           |
+| `GROQ_API_BASE_URL`   | Custom endpoint for Groq API           | `https://api.groq.com/openai/v1` |
+| `GROQ_MODEL`          | Groq model to use                      | `openai/gpt-oss-120b`          |
 | `GIT_SAGE_API_BASE_URL` | Custom endpoint for the AI API        | `https://api.groq.com/openai/v1` |
-| `GIT_SAGE_MODEL`      | Primary model to use                   | `llama-3.3-70b-versatile`      |
+| `GIT_SAGE_MODEL`      | Primary model to use                   | `openai/gpt-oss-120b`          |
 
-If the primary model fails, git-sage automatically retries with fallback model `llama-3.1-8b-instant`.
+If the primary model fails, git-sage automatically retries with fallback models `openai/gpt-oss-20b` and `qwen/qwen3.8-27b`.
 
 | Variable                  | Legacy/Alternative Variable            |
 | ------------------------- | -------------------------------------- |
-| `GIT_SAGE_API_BASE_URL`   | `GEMINI_API_BASE_URL`                  |
-| `GIT_SAGE_MODEL`          | `GEMINI_MODEL`                         |
+| `GIT_SAGE_API_BASE_URL`   | `GROQ_API_BASE_URL`, `GEMINI_API_BASE_URL` |
+| `GIT_SAGE_MODEL`          | `GROQ_MODEL`, `GEMINI_MODEL`           |
 
 ## 🏗 Internal Architecture
 

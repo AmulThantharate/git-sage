@@ -13,8 +13,8 @@ import (
 
 const (
 	// defaultModel is the default Groq model used to generate commit messages.
-	defaultModel   = "llama-3.3-70b-versatile"
-	fallbackModel  = "llama-3.1-8b-instant"
+	defaultModel   = "openai/gpt-oss-120b"
+	fallbackModel  = "openai/gpt-oss-20b"
 	defaultBaseURL = "https://api.groq.com/openai/v1"
 )
 
@@ -125,7 +125,10 @@ func GenerateSubject(diff string, commitType string, emoji string, userDescripti
 		return "", fmt.Errorf("no API key found. Please set GROQ_API_KEY, GIT_SAGE_API_KEY, or GEMINI_API_KEY")
 	}
 
-	baseURL := os.Getenv("GIT_SAGE_API_BASE_URL")
+	baseURL := os.Getenv("GROQ_API_BASE_URL")
+	if baseURL == "" {
+		baseURL = os.Getenv("GIT_SAGE_API_BASE_URL")
+	}
 	if baseURL == "" {
 		baseURL = os.Getenv("GEMINI_API_BASE_URL")
 	}
@@ -133,14 +136,17 @@ func GenerateSubject(diff string, commitType string, emoji string, userDescripti
 		baseURL = defaultBaseURL
 	}
 
-	model := os.Getenv("GIT_SAGE_MODEL")
+	model := os.Getenv("GROQ_MODEL")
+	if model == "" {
+		model = os.Getenv("GIT_SAGE_MODEL")
+	}
 	if model == "" {
 		model = os.Getenv("GEMINI_MODEL")
 	}
 	if model == "" {
 		model = defaultModel
 	}
-	modelsToTry := uniqueModels([]string{model, fallbackModel})
+	modelsToTry := uniqueModels([]string{model, fallbackModel, "qwen/qwen3.8-27b"})
 
 	descSection := ""
 	if userDescription != "" {
